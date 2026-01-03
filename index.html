@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini Car Runner — Driver Seat POV</title>
+  <title>Mini Car Runner — Cockpit POV</title>
   <style>
     :root{
       --bg:#0b0f14;--panel:#121826;--text:#e7eefc;--muted:#9bb0d1;--accent:#5eead4;--shadow:rgba(0,0,0,.35)
@@ -79,126 +79,6 @@
         linear-gradient(#0a1020,#070b12);
     }
 
-    /* === DRIVER SEAT OVERLAYS === */
-    .pov {
-      position:absolute; inset:0;
-      pointer-events:none;
-      z-index:15; /* below overlay menu (20) but above canvas */
-    }
-
-    /* Windshield tint + top frame */
-    .windshield-top {
-      position:absolute; left:0; right:0; top:0;
-      height: 18%;
-      background: linear-gradient(to bottom,
-        rgba(0,0,0,0.55),
-        rgba(0,0,0,0.15),
-        rgba(0,0,0,0.00));
-    }
-
-    /* A-pillars (left/right frame) */
-    .pillar {
-      position:absolute; top:-4%; bottom: 18%;
-      width: 18%;
-      background: linear-gradient(to right,
-        rgba(0,0,0,0.70),
-        rgba(0,0,0,0.25),
-        rgba(0,0,0,0.00));
-      filter: blur(0.2px);
-      opacity: 0.85;
-    }
-    .pillar.left {
-      left:-4%;
-      transform: skewX(-10deg);
-      border-right: 1px solid rgba(255,255,255,0.06);
-    }
-    .pillar.right {
-      right:-4%;
-      transform: skewX(10deg) scaleX(-1);
-      border-left: 1px solid rgba(255,255,255,0.06);
-    }
-
-    /* Glass subtle reflections */
-    .glass-reflect {
-      position:absolute; inset:0;
-      background:
-        radial-gradient(420px 300px at 70% 18%, rgba(255,255,255,0.05), transparent 60%),
-        radial-gradient(520px 360px at 20% 22%, rgba(94,234,212,0.05), transparent 65%);
-      mix-blend-mode: screen;
-      opacity: 0.55;
-    }
-
-    /* Dashboard */
-    .dash {
-      position:absolute; left:-6%; right:-6%; bottom:-10%;
-      height: 34%;
-      background: radial-gradient(900px 300px at 50% 0%,
-        rgba(255,255,255,0.08),
-        rgba(255,255,255,0.00) 60%),
-        linear-gradient(to bottom,
-        rgba(10,14,20,0.00),
-        rgba(6,8,12,0.75) 25%,
-        rgba(6,8,12,0.92) 70%,
-        rgba(6,8,12,0.98));
-      border-top: 1px solid rgba(255,255,255,0.06);
-      border-radius: 60% 60% 0 0;
-      transform: translateY(6%);
-    }
-
-    /* Steering wheel (half) */
-    .wheel-wrap{
-      position:absolute;
-      left:50%;
-      bottom: 2.5%;
-      width:min(320px, 72%);
-      aspect-ratio: 1 / 1;
-      transform: translateX(-50%);
-      display:grid;
-      place-items:center;
-      opacity: 0.92;
-    }
-    .wheel{
-      width:100%;
-      height:100%;
-      border-radius:999px;
-      border: 18px solid rgba(30,36,46,0.92);
-      box-shadow:
-        0 20px 50px rgba(0,0,0,0.55),
-        inset 0 0 0 2px rgba(255,255,255,0.06),
-        inset 0 -10px 30px rgba(0,0,0,0.35);
-      background: radial-gradient(circle at 50% 40%,
-        rgba(255,255,255,0.06),
-        rgba(0,0,0,0.10) 60%,
-        rgba(0,0,0,0.20));
-      /* Hide top half => only show lower half */
-      clip-path: inset(52% 0 0 0 round 999px);
-      transform: rotate(var(--wheelRot, 0deg));
-      transition: transform 80ms linear;
-    }
-    .wheel:before{
-      content:"";
-      position:absolute;
-      inset: 18%;
-      border-radius:999px;
-      border: 10px solid rgba(18,24,38,0.92);
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.05);
-    }
-    .wheel:after{
-      content:"";
-      position:absolute;
-      left:50%; top:50%;
-      width: 22%;
-      height: 22%;
-      transform: translate(-50%,-50%);
-      border-radius: 999px;
-      background: radial-gradient(circle at 35% 35%,
-        rgba(94,234,212,0.20),
-        rgba(18,24,38,0.92));
-      border: 1px solid rgba(255,255,255,0.07);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
-    }
-
-    /* Overlay menu */
     .overlay{
       position:absolute;inset:0;display:grid;place-items:center;padding:18px;
       background:rgba(6,8,12,.56);backdrop-filter:blur(6px);
@@ -246,8 +126,6 @@
       .title span{font-size:11px}
       .chip{padding:6px 8px;font-size:11px;gap:6px}
       .btn{padding:8px 10px;font-size:11px;border-radius:11px}
-      .pillar{width:22%}
-      .wheel{border-width:16px}
     }
   </style>
 </head>
@@ -257,17 +135,16 @@
       <div class="topbar" id="topbar">
         <div class="title">
           <strong>Mini Car Runner</strong>
-          <span>Driver Seat POV · Windshield + steering</span>
+          <span>Cockpit POV · Steering + windshield</span>
         </div>
 
         <div class="stats">
           <div class="chip"><span class="dot"></span> <span>Score</span> <b id="score">0</b></div>
           <div class="chip"><span class="dot gray"></span> <span>Speed</span> <b id="speed">1.0</b></div>
-          <div class="chip" id="levelChip" style="display:none"><span class="dot.purple"></span><span style="display:none"></span></div>
-          <div class="chip" id="levelChip2" style="display:none"><span class="dot purple"></span> <span>Level</span> <b id="level">1</b></div>
-          <div class="chip" id="bulletsChip" style="display:none"><span class="dot blue"></span> <span>Bullets</span> <b id="bullets">0</b></div>
-          <div class="chip" id="livesChip" style="display:none"><span class="dot green"></span> <span>Life</span> <b id="lives">1</b></div>
-          <button class="btn" id="soundBtn" type="button" title="Toggle sound">Sound: On</button>
+          <div class="chip"><span class="dot purple"></span> <span>Level</span> <b id="level">1</b></div>
+          <div class="chip"><span class="dot blue"></span> <span>Bullets</span> <b id="bullets">∞</b></div>
+          <div class="chip"><span class="dot green"></span> <span>Life</span> <b id="lives">1</b></div>
+          <button class="btn" id="soundBtn" type="button">Sound: On</button>
           <button class="btn" id="pauseBtn" type="button">Pause</button>
           <button class="btn primary" id="restartBtn" type="button">Restart</button>
         </div>
@@ -275,18 +152,6 @@
 
       <div class="stage" id="stage">
         <canvas id="game" width="540" height="960"></canvas>
-
-        <!-- Driver POV overlays -->
-        <div class="pov" aria-hidden="true">
-          <div class="windshield-top"></div>
-          <div class="pillar left"></div>
-          <div class="pillar right"></div>
-          <div class="glass-reflect"></div>
-          <div class="dash"></div>
-          <div class="wheel-wrap">
-            <div class="wheel" id="wheel"></div>
-          </div>
-        </div>
 
         <div class="overlay show" id="overlay">
           <div class="card">
@@ -301,7 +166,7 @@
                 <kbd>Space</kbd> pause · <kbd>R</kbd> restart
               </div>
               <div style="margin-top:8px;opacity:.85" id="hintSub">
-                On phone: use the fixed bottom Left/Right/Shoot buttons.
+                On phone: use the fixed bottom Left/Shoot/Right buttons.
               </div>
             </div>
 
@@ -344,7 +209,6 @@
       // -----------------------------
       const stage = document.getElementById("stage");
       const topbar = document.getElementById("topbar");
-      const wheelEl = document.getElementById("wheel");
 
       function computeStageHeight() {
         const vh = window.innerHeight || 800;
@@ -372,11 +236,8 @@
       // -----------------------------
       const scoreEl = document.getElementById("score");
       const speedEl = document.getElementById("speed");
-      const levelChip = document.getElementById("levelChip2");
       const levelEl = document.getElementById("level");
-      const bulletsChip = document.getElementById("bulletsChip");
       const bulletsEl = document.getElementById("bullets");
-      const livesChip = document.getElementById("livesChip");
       const livesEl = document.getElementById("lives");
       const pauseBtn = document.getElementById("pauseBtn");
       const restartBtn = document.getElementById("restartBtn");
@@ -438,6 +299,7 @@
       const SFX = {
         gainLife()    { beep({freq: 660, dur: 0.10, type:"sine", gain:0.07, sweep: +220}); beep({freq: 880, dur:0.08, type:"sine", gain:0.05, when:0.06}); },
         gainAmmo()    { beep({freq: 520, dur: 0.08, type:"triangle", gain:0.06, sweep:+120}); beep({freq: 740, dur:0.06, type:"triangle", gain:0.04, when:0.05}); },
+        shoot()       { beep({freq: 260, dur: 0.04, type:"square", gain:0.05, sweep:+40}); },
         hitShot()     { beep({freq: 220, dur: 0.04, type:"square", gain:0.05, sweep:-40}); },
         destroyBox()  { beep({freq: 180, dur: 0.06, type:"sawtooth", gain:0.06, sweep:+220}); beep({freq: 110, dur: 0.08, type:"sawtooth", gain:0.05, when:0.03}); },
         hitObstacle() { beep({freq: 140, dur: 0.10, type:"square", gain:0.07, sweep:-60}); },
@@ -449,14 +311,66 @@
       }
 
       // -----------------------------
-      // Driver POV projection
+      // Helpers
       // -----------------------------
+      function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+      function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+      function roundRect(ctx, x, y, w, h, r) {
+        const rr = Math.min(r, w/2, h/2);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+      }
+
+      function aabb(ax, ay, aw, ah, bx, by, bw, bh) {
+        return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+      }
+
+      // -----------------------------
+      // GAME STATE
+      // -----------------------------
+      let mode = null;   // "infinite" | "scarcity"
+      let level = null;  // 1,2,3
+
+      let running = false;
+      let paused = false;
+      let crashed = false;
+
+      let score = 0;
+      let speedMul = 1.0;
+
+      let ammo = Infinity;
+      let lives = 1;
+
+      let invuln = 0;
+      const INVULN_TIME = 0.65;
+
+      // PLAYER lane
       const lanes = 3;
-      const horizonY = Math.floor(H * 0.26);
-      const roadBottomW = Math.floor(W * 0.74);
-      const roadTopW    = Math.floor(W * 0.12);
-      const roadCenterX = Math.floor(W * 0.5);
-      const FOCAL = 320;
+      let playerLane = 1;
+
+      // --- IMPORTANT FIX ---
+      // Camera lane centering must depend on Y (because lane width changes with Y).
+      // We compute camShiftAtY(y): how much to shift road center at that y so that
+      // the chosen lane center lands exactly at screen center.
+      let camSwayX = 0;
+      let camSwayVel = 0;
+
+      // steering wheel
+      let wheelRot = 0;
+
+      // POV / projection
+      const horizonY = Math.floor(H * 0.18);
+
+      // road perspective
+      const roadBottomW = Math.floor(W * 1.20);
+      const roadTopW    = Math.floor(W * 0.10);
+      const FOCAL = 300;
 
       function projYFromDist(d) {
         const t = FOCAL / (d + FOCAL);
@@ -466,52 +380,29 @@
         const t = (y - horizonY) / Math.max(1, (H - horizonY));
         return roadTopW + clamp(t, 0, 1) * (roadBottomW - roadTopW);
       }
-      function laneCenterAt(laneIdx, y) {
+
+      function camShiftAtY(y) {
+        // Solve for camX in:
+        // laneCenter = (W/2 + camX - rw/2) + (rw/lanes)*(lane+0.5) = W/2
+        // => camX = rw/2 - rw*(lane+0.5)/lanes = rw*(0.5 - (lane+0.5)/lanes)
         const rw = roadWidthAtY(y);
-        const laneW = rw / lanes;
-        const left = roadCenterX - rw/2;
-        return left + laneW * laneIdx + laneW/2;
+        const base = rw * (0.5 - (playerLane + 0.5) / lanes);
+
+        // sway should be stronger near bottom than near horizon (feels natural)
+        const t = clamp((y - horizonY) / Math.max(1, (H - horizonY)), 0, 1);
+        const sway = camSwayX * (0.20 + 0.80 * t);
+
+        return base + sway;
       }
 
-      // -----------------------------
-      // Car
-      // -----------------------------
-      const car = {
-        lane: 1,
-        x: roadCenterX,
-        y: Math.floor(H * 0.82),
-        w: 0,
-        h: 0,
-        color: "#5eead4",
-      };
-      function updateCarSize() {
-        const rw = roadWidthAtY(car.y);
-        const laneW = rw / lanes;
-        car.w = Math.floor(laneW * 0.62);
-        car.h = Math.floor(laneW * 1.08);
-      }
-      function resetCar() {
-        car.lane = 1;
-        car.x = Math.floor(laneCenterAt(car.lane, car.y));
-      }
+      // cockpit collision
+      const COLLIDE_D = 140;
 
       // -----------------------------
       // Entities
       // -----------------------------
       const obstacles = [];
       const bullets = [];
-
-      let mode = null;   // "infinite" | "scarcity"
-      let level = null;  // 1 | 2 | 3
-
-      let ammo = Infinity;
-      let lives = 1;
-
-      let invuln = 0;
-      const INVULN_TIME = 0.65;
-
-      let score = 0;
-      let speedMul = 1.0;
 
       const obstacleKinds = [
         { name: "barrel", w: 0.55, h: 0.55, color: "#fbbf24" },
@@ -522,9 +413,6 @@
       const ammoKind = { name: "ammo", w: 0.74, h: 0.56, color: "#60a5fa" };
       const lifeKind = { name: "life", w: 0.72, h: 0.54, color: "#34d399" };
 
-      function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
-      function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-
       function kindHP(kindName) {
         if (kindName === "cone") return 1;
         if (kindName === "barrel") return 2;
@@ -532,6 +420,14 @@
         if (kindName === "block") return 4;
         return 2;
       }
+
+      function obstaclePoints(o) {
+        const tier = Math.max(1, Math.round((o.baseW * o.baseH) * 10));
+        return 10 * tier + 10 * (o.hpMax - 1);
+      }
+
+      const SPAWN_DIST = 1700;
+      const DESPAWN_DIST = 80;
 
       function ammoValueBySpeed() {
         const hi = (speedMul < 1.7) ? 3 : (speedMul < 2.6) ? 4 : 5;
@@ -541,14 +437,6 @@
         const hi = (speedMul < 2.2) ? 2 : 3;
         return randInt(1, hi);
       }
-
-      function obstaclePointsProjected(o) {
-        const sizeTier = Math.max(1, Math.round((o.baseW * o.baseH) * 10));
-        return 10 * sizeTier + 10 * (o.hpMax - 1);
-      }
-
-      const SPAWN_DIST = 1600;
-      const DESPAWN_DIST = 70;
 
       function spawnThing() {
         const lane = randInt(0, lanes - 1);
@@ -593,36 +481,13 @@
       function initDashes() {
         dashMarks.length = 0;
         const spacing = 140;
-        const count = 28;
+        const count = 30;
         for (let i = 0; i < count; i++) dashMarks.push({ d: i * spacing });
       }
 
-      // Runtime flags
-      let running = false;
-      let paused = false;
-      let crashed = false;
-      let lastT = 0;
-
-      // Spawning
-      let spawnTimer = 0;
-      let spawnEvery = 0.95;
-
-      // Input holds
-      let moveLeftHeld = false;
-      let moveRightHeld = false;
-      let laneMoveCooldown = 0;
-      const laneMoveDelay = 0.12;
-
-      let shootHeld = false;
-      let shootCooldown = 0;
-      const shootDelay = 0.14;
-      let shootHeldTimer = 0;
-
-      // Camera / wheel feel
-      let camShiftX = 0;      // pixels shift of road center
-      let camVel = 0;
-      let wheelRot = 0;       // degrees
-
+      // -----------------------------
+      // UI state
+      // -----------------------------
       function setOverlay(show, title, sub) {
         overlay.classList.toggle("show", !!show);
         if (title != null) overlayTitle.textContent = title;
@@ -632,20 +497,9 @@
       function setUI() {
         scoreEl.textContent = String(Math.floor(score));
         speedEl.textContent = speedMul.toFixed(1);
-
-        if (!mode || !level) {
-          bulletsChip.style.display = "none";
-          livesChip.style.display = "none";
-          levelChip.style.display = "none";
-        } else {
-          bulletsChip.style.display = "inline-flex";
-          livesChip.style.display = "inline-flex";
-          levelChip.style.display = "inline-flex";
-          bulletsEl.textContent = (mode === "scarcity") ? String(ammo) : "∞";
-          livesEl.textContent = String(lives);
-          levelEl.textContent = String(level);
-        }
-
+        levelEl.textContent = String(level || 1);
+        bulletsEl.textContent = (mode === "scarcity") ? String(ammo) : "∞";
+        livesEl.textContent = String(lives);
         pauseBtn.textContent = paused ? "Resume" : "Pause";
         updateSoundBtn();
       }
@@ -653,71 +507,65 @@
       function resetGame() {
         obstacles.length = 0;
         bullets.length = 0;
+
         score = 0;
         speedMul = 1.0;
-        spawnTimer = 0;
-        spawnEvery = 0.95;
+
         crashed = false;
         paused = false;
-        laneMoveCooldown = 0;
-        shootCooldown = 0;
-        shootHeldTimer = 0;
+        running = false;
+
         ammo = (mode === "scarcity") ? 0 : Infinity;
         lives = 1;
         invuln = 0;
-        camShiftX = 0;
-        camVel = 0;
+
+        playerLane = 1;
+
+        camSwayX = 0;
+        camSwayVel = 0;
         wheelRot = 0;
-        resetCar();
+
+        spawnTimer = 0;
+        spawnEvery = 0.95;
+
         initDashes();
         setUI();
       }
 
-      // Projected rect
-      function projectedRectFor(o) {
-        const y = projYFromDist(o.d);
-        const rw = roadWidthAtY(y);
-        const laneW = rw / lanes;
-        const cx = (W*0.5 + camShiftX); // camera shift affects lane centers
-        const left = cx - rw/2;
-        const center = left + laneW * o.lane + laneW/2;
-
-        const w = Math.max(10, Math.floor(laneW * o.baseW));
-        const h = Math.max(10, Math.floor(laneW * o.baseH));
-        return { x: Math.floor(center - w/2), y: Math.floor(y - h), w, h };
-      }
-
-      function aabb(ax, ay, aw, ah, bx, by, bw, bh) {
-        return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
-      }
-
-      // Drawing helpers
-      function roundRect(ctx, x, y, w, h, r) {
-        const rr = Math.min(r, w/2, h/2);
-        ctx.beginPath();
-        ctx.moveTo(x + rr, y);
-        ctx.arcTo(x + w, y, x + w, y + h, rr);
-        ctx.arcTo(x + w, y + h, x, y + h, rr);
-        ctx.arcTo(x, y + h, x, y, rr);
-        ctx.arcTo(x, y, x + w, y, rr);
-        ctx.closePath();
+      // -----------------------------
+      // Drawing
+      // -----------------------------
+      function drawSkyGlow() {
+        ctx.save();
+        const g = ctx.createRadialGradient(W*0.55, H*0.05, 10, W*0.55, H*0.05, H*0.7);
+        g.addColorStop(0, "rgba(94,234,212,0.08)");
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,W,H);
+        ctx.restore();
       }
 
       function drawRoadPOV() {
-        const topW = roadTopW;
-        const botW = roadBottomW;
         const topY = horizonY;
         const botY = H;
 
-        const cx = W*0.5 + camShiftX;
+        const topW = roadTopW;
+        const botW = roadBottomW;
 
-        const leftTop = cx - topW/2;
-        const rightTop = cx + topW/2;
-        const leftBot = cx - botW/2;
-        const rightBot = cx + botW/2;
+        const camTop = camShiftAtY(topY);
+        const camBot = camShiftAtY(botY);
+
+        const cxTop = (W/2) + camTop;
+        const cxBot = (W/2) + camBot;
+
+        const leftTop = cxTop - topW/2;
+        const rightTop = cxTop + topW/2;
+        const leftBot = cxBot - botW/2;
+        const rightBot = cxBot + botW/2;
 
         ctx.save();
 
+        // asphalt
         ctx.beginPath();
         ctx.moveTo(leftTop, topY);
         ctx.lineTo(rightTop, topY);
@@ -726,49 +574,83 @@
         ctx.closePath();
 
         const g = ctx.createLinearGradient(0, topY, 0, botY);
-        g.addColorStop(0, "rgba(255,255,255,0.05)");
-        g.addColorStop(1, "rgba(255,255,255,0.02)");
+        g.addColorStop(0, "rgba(255,255,255,0.04)");
+        g.addColorStop(1, "rgba(255,255,255,0.015)");
         ctx.fillStyle = g;
         ctx.fill();
 
-        ctx.strokeStyle = "rgba(255,255,255,0.14)";
+        // edges
+        ctx.strokeStyle = "rgba(255,255,255,0.18)";
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // lane separators
+        // lane lines (straight in this shifted trapezoid)
         for (let li = 1; li < lanes; li++) {
-          ctx.beginPath();
           const xTop = leftTop + (topW/lanes) * li;
           const xBot = leftBot + (botW/lanes) * li;
+          ctx.beginPath();
           ctx.moveTo(xTop, topY);
           ctx.lineTo(xBot, botY);
-          ctx.strokeStyle = "rgba(255,255,255,0.10)";
+          ctx.strokeStyle = "rgba(255,255,255,0.11)";
           ctx.lineWidth = 2;
           ctx.stroke();
         }
 
-        // dashes
-        ctx.beginPath();
-        ctx.rect(0,0,W,H);
-        ctx.clip();
+        // dashes (use camShiftAtY(y) so they stay in correct lane after shifts)
         for (let li = 1; li < lanes; li++) {
           for (const d of dashMarks) {
             const y = projYFromDist(d.d);
-            const nextY = projYFromDist(d.d + 70);
-            const h = Math.max(6, Math.floor(nextY - y));
+            const y2 = projYFromDist(d.d + 70);
+            const h = Math.max(6, Math.floor(y2 - y));
             if (y < horizonY || y > H) continue;
 
             const rw = roadWidthAtY(y);
             const laneW = rw / lanes;
+            const cam = camShiftAtY(y);
+            const cx = (W/2) + cam;
             const left = cx - rw/2;
             const x = left + laneW * li;
 
-            ctx.fillStyle = "rgba(255,255,255,0.18)";
+            ctx.fillStyle = "rgba(255,255,255,0.22)";
             ctx.fillRect(x - 2, y, 4, h);
           }
         }
 
+        // center glow (also shifted)
+        ctx.globalAlpha = 0.65;
+        const glow = ctx.createLinearGradient(0, horizonY, 0, H);
+        glow.addColorStop(0, "rgba(94,234,212,0.00)");
+        glow.addColorStop(1, "rgba(94,234,212,0.07)");
+        ctx.fillStyle = glow;
+
+        const midTopW = topW * 0.24;
+        const midBotW = botW * 0.44;
+
+        ctx.beginPath();
+        ctx.moveTo(cxTop - midTopW/2, topY);
+        ctx.lineTo(cxTop + midTopW/2, topY);
+        ctx.lineTo(cxBot + midBotW/2, botY);
+        ctx.lineTo(cxBot - midBotW/2, botY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
         ctx.restore();
+      }
+
+      function projectedRectFor(o) {
+        const y = projYFromDist(o.d);
+        const rw = roadWidthAtY(y);
+        const laneW = rw / lanes;
+
+        const cam = camShiftAtY(y);
+        const cx = (W/2) + cam;
+        const left = cx - rw/2;
+        const center = left + laneW * o.lane + laneW/2;
+
+        const w = Math.max(10, Math.floor(laneW * o.baseW));
+        const h = Math.max(10, Math.floor(laneW * o.baseH));
+        return { x: Math.floor(center - w/2), y: Math.floor(y - h), w, h, yBase: y };
       }
 
       function drawAmmoBox(o, r) {
@@ -834,17 +716,7 @@
         roundRect(ctx, r.x, r.y, r.w, r.h, 12); ctx.fill();
 
         ctx.fillStyle = "rgba(255,255,255,0.16)";
-        if (o.kind === "cone") {
-          roundRect(ctx, r.x + r.w*0.18, r.y + r.h*0.35, r.w*0.64, r.h*0.10, 8); ctx.fill();
-          roundRect(ctx, r.x + r.w*0.22, r.y + r.h*0.55, r.w*0.56, r.h*0.10, 8); ctx.fill();
-        } else if (o.kind === "barrel") {
-          roundRect(ctx, r.x + r.w*0.10, r.y + r.h*0.18, r.w*0.80, r.h*0.10, 8); ctx.fill();
-          roundRect(ctx, r.x + r.w*0.10, r.y + r.h*0.72, r.w*0.80, r.h*0.10, 8); ctx.fill();
-        } else if (o.kind === "oil") {
-          roundRect(ctx, r.x + r.w*0.12, r.y + r.h*0.22, r.w*0.76, r.h*0.56, 999); ctx.fill();
-        } else {
-          roundRect(ctx, r.x + r.w*0.14, r.y + r.h*0.20, r.w*0.72, r.h*0.60, 10); ctx.fill();
-        }
+        roundRect(ctx, r.x + r.w*0.14, r.y + r.h*0.20, r.w*0.72, r.h*0.60, 10); ctx.fill();
 
         if (o.hpMax > 1) {
           const pad = Math.max(5, Math.floor(r.w*0.10));
@@ -866,7 +738,9 @@
         const y = projYFromDist(b.d);
         const rw = roadWidthAtY(y);
         const laneW = rw / lanes;
-        const cx = (W*0.5 + camShiftX);
+
+        const cam = camShiftAtY(y);
+        const cx = (W/2) + cam;
         const left = cx - rw/2;
         const c = left + laneW * b.lane + laneW/2;
 
@@ -887,49 +761,156 @@
         b._rect = { x, y: yy, w, h };
       }
 
-      function drawCar() {
-        updateCarSize();
-
-        // car slightly shifts with camera for “in-cabin” feel
-        const laneX = laneCenterAt(car.lane, car.y);
-        car.x = Math.floor(laneX + camShiftX * 0.25);
-
-        const x = car.x - car.w/2;
-        const y = car.y - car.h;
-
+      // cockpit drawing (unchanged)
+      function drawCockpit() {
+        // windshield vignette
         ctx.save();
-        if (invuln > 0) ctx.globalAlpha = 0.55 + 0.45 * Math.sin(performance.now() * 0.02);
-
-        ctx.fillStyle = "rgba(0,0,0,0.35)";
-        roundRect(ctx, x + 6, y + 10, car.w, car.h, 16); ctx.fill();
-
-        ctx.fillStyle = car.color;
-        roundRect(ctx, x, y, car.w, car.h, 16); ctx.fill();
-
-        ctx.fillStyle = "rgba(8, 12, 18, 0.55)";
-        roundRect(ctx, x + car.w*0.18, y + car.h*0.18, car.w*0.64, car.h*0.26, 12); ctx.fill();
-
-        ctx.fillStyle = "rgba(255,255,255,0.18)";
-        roundRect(ctx, x + car.w*0.45, y + car.h*0.12, car.w*0.10, car.h*0.72, 10); ctx.fill();
-
-        ctx.fillStyle = "rgba(255,255,255,0.75)";
-        roundRect(ctx, x + car.w*0.12, y + car.h*0.06, car.w*0.18, car.h*0.08, 8); ctx.fill();
-        roundRect(ctx, x + car.w*0.70, y + car.h*0.06, car.w*0.18, car.h*0.08, 8); ctx.fill();
-
-        ctx.fillStyle = "rgba(0,0,0,0.55)";
-        ctx.fillRect(x - 6, y + car.h*0.20, 8, car.h*0.22);
-        ctx.fillRect(x - 6, y + car.h*0.58, 8, car.h*0.22);
-        ctx.fillRect(x + car.w - 2, y + car.h*0.20, 8, car.h*0.22);
-        ctx.fillRect(x + car.w - 2, y + car.h*0.58, 8, car.h*0.22);
-
+        const vg = ctx.createRadialGradient(W*0.5, H*0.42, 80, W*0.5, H*0.42, H*0.75);
+        vg.addColorStop(0, "rgba(0,0,0,0.00)");
+        vg.addColorStop(1, "rgba(0,0,0,0.52)");
+        ctx.fillStyle = vg;
+        ctx.fillRect(0,0,W,H);
         ctx.restore();
 
-        car._rect = { x, y, w: car.w, h: car.h };
+        // A-pillars + top tint
+        ctx.save();
+        ctx.fillStyle = "rgba(0,0,0,0.30)";
+        ctx.fillRect(0,0,W,Math.floor(H*0.16));
+        ctx.fillStyle = "rgba(0,0,0,0.58)";
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(Math.floor(W*0.20),0);
+        ctx.lineTo(Math.floor(W*0.30),Math.floor(H*0.40));
+        ctx.lineTo(0,Math.floor(H*0.34));
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(W,0);
+        ctx.lineTo(Math.floor(W*0.80),0);
+        ctx.lineTo(Math.floor(W*0.70),Math.floor(H*0.40));
+        ctx.lineTo(W,Math.floor(H*0.34));
+        ctx.closePath();
+        ctx.fill();
+
+        // subtle glass reflection
+        ctx.globalAlpha = 0.35;
+        const rg = ctx.createRadialGradient(W*0.72, H*0.10, 10, W*0.72, H*0.10, H*0.6);
+        rg.addColorStop(0, "rgba(255,255,255,0.10)");
+        rg.addColorStop(1, "rgba(255,255,255,0.00)");
+        ctx.fillStyle = rg;
+        ctx.fillRect(0,0,W,H);
+        ctx.restore();
+
+        // cockpit sides
+        ctx.save();
+        const baseY = Math.floor(H*0.62);
+        ctx.fillStyle = "rgba(6,8,12,0.92)";
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        ctx.lineTo(0, baseY);
+        ctx.quadraticCurveTo(Math.floor(W*0.08), Math.floor(H*0.64), Math.floor(W*0.18), Math.floor(H*0.70));
+        ctx.lineTo(Math.floor(W*0.28), H);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(W, H);
+        ctx.lineTo(W, baseY);
+        ctx.quadraticCurveTo(Math.floor(W*0.92), Math.floor(H*0.64), Math.floor(W*0.82), Math.floor(H*0.70));
+        ctx.lineTo(Math.floor(W*0.72), H);
+        ctx.closePath();
+        ctx.fill();
+
+        // nose cone
+        ctx.fillStyle = "rgba(10,14,20,0.95)";
+        ctx.beginPath();
+        ctx.moveTo(Math.floor(W*0.46), H);
+        ctx.lineTo(Math.floor(W*0.54), H);
+        ctx.lineTo(Math.floor(W*0.58), Math.floor(H*0.72));
+        ctx.lineTo(Math.floor(W*0.42), Math.floor(H*0.72));
+        ctx.closePath();
+        ctx.fill();
+
+        // nose highlight
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = "rgba(94,234,212,0.10)";
+        ctx.beginPath();
+        ctx.moveTo(Math.floor(W*0.49), H);
+        ctx.lineTo(Math.floor(W*0.51), H);
+        ctx.lineTo(Math.floor(W*0.535), Math.floor(H*0.73));
+        ctx.lineTo(Math.floor(W*0.465), Math.floor(H*0.73));
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+
+        // mirrors
+        ctx.save();
+        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = "rgba(18,24,38,0.9)";
+        roundRect(ctx, Math.floor(W*0.10), Math.floor(H*0.52), Math.floor(W*0.18), Math.floor(H*0.06), 10); ctx.fill();
+        roundRect(ctx, Math.floor(W*0.72), Math.floor(H*0.52), Math.floor(W*0.18), Math.floor(H*0.06), 10); ctx.fill();
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = "rgba(231,238,252,0.9)";
+        ctx.fillRect(Math.floor(W*0.12), Math.floor(H*0.535), Math.floor(W*0.14), Math.floor(H*0.02));
+        ctx.fillRect(Math.floor(W*0.74), Math.floor(H*0.535), Math.floor(W*0.14), Math.floor(H*0.02));
+        ctx.restore();
+
+        // steering wheel
+        const cx = W*0.5;
+        const cy = H*0.88;
+        const R = Math.min(W,H)*0.26;
+        const rot = wheelRot * Math.PI/180;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(rot);
+
+        ctx.lineWidth = Math.max(14, R*0.12);
+        ctx.strokeStyle = "rgba(30,36,46,0.95)";
+        ctx.beginPath();
+        ctx.arc(0,0,R,Math.PI*0.08,Math.PI*0.92,false);
+        ctx.stroke();
+
+        ctx.lineWidth = Math.max(10, R*0.08);
+        ctx.strokeStyle = "rgba(18,24,38,0.95)";
+        ctx.beginPath();
+        ctx.arc(0,0,R*0.70,Math.PI*0.10,Math.PI*0.90,false);
+        ctx.stroke();
+
+        ctx.fillStyle = "rgba(18,24,38,0.98)";
+        ctx.beginPath();
+        ctx.arc(0,0,R*0.22,0,Math.PI*2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(94,234,212,0.25)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0,0,R*0.22,0,Math.PI*2);
+        ctx.stroke();
+
+        ctx.globalAlpha = 0.85;
+        for (let i=0;i<6;i++){
+          const ang = Math.PI*(0.18 + i*0.12);
+          const rr = R*0.08;
+          ctx.fillStyle = (i%2===0) ? "rgba(94,234,212,0.35)" : "rgba(231,238,252,0.22)";
+          ctx.beginPath();
+          ctx.arc(Math.cos(ang)*R*0.52, Math.sin(ang)*R*0.52, rr, 0, Math.PI*2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = "rgba(10,10,12,0.95)";
+        roundRect(ctx, -R*0.90, -R*0.06, R*0.36, R*0.24, 14); ctx.fill();
+        roundRect(ctx,  R*0.54, -R*0.06, R*0.36, R*0.24, 14); ctx.fill();
+        ctx.restore();
+
+        ctx.restore();
       }
 
       function render() {
         ctx.clearRect(0,0,W,H);
-
+        drawSkyGlow();
         drawRoadPOV();
 
         const sortedObs = obstacles.slice().sort((a,b)=> b.d - a.d);
@@ -942,11 +923,9 @@
         const sortedBul = bullets.slice().sort((a,b)=> b.d - a.d);
         for (const b of sortedBul) drawBullet(b);
 
-        drawCar();
+        drawCockpit();
 
-        if (!running) return;
-
-        if (paused) {
+        if (running && paused) {
           ctx.save();
           ctx.fillStyle = "rgba(0,0,0,0.35)";
           ctx.fillRect(0,0,W,H);
@@ -962,32 +941,19 @@
       }
 
       // -----------------------------
-      // Gameplay
+      // Gameplay actions
       // -----------------------------
-      function tryMove(dir) {
-        const next = clamp(car.lane + dir, 0, lanes - 1);
-        if (next !== car.lane) {
-          car.lane = next;
-          laneMoveCooldown = laneMoveDelay;
-
-          // camera + wheel feedback
-          camVel += dir * 520;
-        }
-      }
-
       function grantAmmo(units) {
         if (mode !== "scarcity") return;
         ammo += units * 10;
         setUI();
         SFX.gainAmmo();
       }
-
       function grantLife(n) {
         lives += n;
         setUI();
         SFX.gainLife();
       }
-
       function spendLife() {
         if (invuln > 0) return;
         lives -= 1;
@@ -996,7 +962,6 @@
         SFX.hitObstacle();
         if (lives <= 0) die();
       }
-
       function die() {
         crashed = true;
         paused = false;
@@ -1008,6 +973,31 @@
         startRow.style.display = "flex";
       }
 
+      // -----------------------------
+      // Movement
+      // -----------------------------
+      let moveLeftHeld = false;
+      let moveRightHeld = false;
+      let laneMoveCooldown = 0;
+      const laneMoveDelay = 0.12;
+
+      function tryMove(dir) {
+        const next = clamp(playerLane + dir, 0, lanes - 1);
+        if (next !== playerLane) {
+          playerLane = next;
+          laneMoveCooldown = laneMoveDelay;
+          camSwayVel += dir * 520;
+        }
+      }
+
+      // -----------------------------
+      // Shooting
+      // -----------------------------
+      let shootHeld = false;
+      let shootCooldown = 0;
+      const shootDelay = 0.14;
+      let shootHeldTimer = 0;
+
       function shootOnce() {
         if (!running || paused || crashed) return;
         if (!mode || !level) return;
@@ -1018,16 +1008,23 @@
           ammo -= 1;
         }
 
-        shootCooldown = 0.14;
-        bullets.push({ lane: car.lane, d: 50 });
+        shootCooldown = shootDelay;
+        bullets.push({ lane: playerLane, d: 120 });
         setUI();
+        SFX.shoot();
       }
+
+      // -----------------------------
+      // Spawning + simulation
+      // -----------------------------
+      let lastT = 0;
+      let spawnTimer = 0;
+      let spawnEvery = 0.95;
 
       function update(dt) {
         speedMul += dt * 0.03;
         speedMul = Math.min(speedMul, 4.0);
-
-        const speed = 620 * speedMul;
+        const speed = 660 * speedMul;
 
         invuln = Math.max(0, invuln - dt);
 
@@ -1039,27 +1036,33 @@
           else if (moveRightHeld) tryMove(+1);
         }
 
-        // steering wheel + camera sway dynamics
-        camShiftX += camVel * dt;
-        camVel *= Math.pow(0.001, dt);
-        camShiftX *= Math.pow(0.001, dt); // recenter
-        camShiftX = clamp(camShiftX, -40, 40);
+        // sway dynamics
+        camSwayX += camSwayVel * dt;
+        camSwayVel *= Math.pow(0.001, dt);
+        camSwayX *= Math.pow(0.001, dt);
+        camSwayX = clamp(camSwayX, -60, 60);
 
-        wheelRot += ((camShiftX * 0.65) - wheelRot) * (1 - Math.pow(0.001, dt));
-        if (wheelEl) wheelEl.style.setProperty("--wheelRot", `${wheelRot}deg`);
+        // wheel: lane-based target + a bit of sway
+        const laneAngle = (playerLane - 1) * 16;
+        const swayAngle = camSwayX * 0.18;
+        const targetWheel = laneAngle + swayAngle;
+        wheelRot += (targetWheel - wheelRot) * (1 - Math.pow(0.001, dt));
 
+        // shooting hold
         shootCooldown = Math.max(0, shootCooldown - dt);
         if (shootHeld) {
           shootHeldTimer += dt;
-          if (shootHeldTimer >= 0.14) {
+          if (shootHeldTimer >= shootDelay) {
             shootHeldTimer = 0;
             shootOnce();
           }
         } else shootHeldTimer = 0;
 
-        for (const dm of dashMarks) dm.d -= speed * dt * 0.80;
-        for (const dm of dashMarks) if (dm.d < 0) dm.d += 140 * 28;
+        // road dashes
+        for (const dm of dashMarks) dm.d -= speed * dt * 0.85;
+        for (const dm of dashMarks) if (dm.d < 0) dm.d += 140 * 30;
 
+        // spawn
         spawnTimer += dt;
         while (spawnTimer >= spawnEvery) {
           spawnTimer -= spawnEvery;
@@ -1067,32 +1070,24 @@
           if (speedMul > 2.0 && Math.random() < 0.25) spawnThing();
         }
 
+        // obstacles
         for (let i = obstacles.length - 1; i >= 0; i--) {
           obstacles[i].d -= speed * dt;
           if (obstacles[i].d < -DESPAWN_DIST) obstacles.splice(i, 1);
         }
 
-        const bulletSpeed = 1400;
+        // bullets
+        const bulletSpeed = 1500;
         for (let i = bullets.length - 1; i >= 0; i--) {
           bullets[i].d += bulletSpeed * dt;
           if (bullets[i].d > SPAWN_DIST + 200) bullets.splice(i, 1);
         }
 
+        // rects
         for (const o of obstacles) o._rect = projectedRectFor(o);
+        for (const b of bullets) drawBullet(b); // also sets b._rect
 
-        for (const b of bullets) {
-          const y = projYFromDist(b.d);
-          const rw = roadWidthAtY(y);
-          const laneW = rw / lanes;
-          const cx = (W*0.5 + camShiftX);
-          const left = cx - rw/2;
-          const c = left + laneW * b.lane + laneW/2;
-          const w = Math.max(5, Math.floor(laneW * 0.10));
-          const h = Math.max(10, Math.floor(laneW * 0.22));
-          b._rect = { x: Math.floor(c - w/2), y: Math.floor(y - h), w, h };
-        }
-
-        // bullet vs obstacles
+        // bullet hits
         for (let bi = bullets.length - 1; bi >= 0; bi--) {
           const b = bullets[bi];
           let hit = false;
@@ -1127,7 +1122,7 @@
             o.hp -= 1;
             SFX.hitShot();
             if (o.hp <= 0) {
-              score += obstaclePointsProjected(o);
+              score += obstaclePoints(o);
               obstacles.splice(oi, 1);
               SFX.destroyBox();
             }
@@ -1137,20 +1132,17 @@
           if (hit) bullets.splice(bi, 1);
         }
 
-        // car collision near
-        const cr = car._rect || { x:0,y:0,w:0,h:0 };
+        // cockpit collision (lane + distance)
         for (let oi = obstacles.length - 1; oi >= 0; oi--) {
           const o = obstacles[oi];
-          if (o.d > 220) continue;
-          if (!aabb(cr.x, cr.y, cr.w, cr.h, o._rect.x, o._rect.y, o._rect.w, o._rect.h)) continue;
+          if (o.d > COLLIDE_D) continue;
+          if (o.lane !== playerLane) continue;
 
-          if (o.isLife) { grantLife(o.value); obstacles.splice(oi, 1); continue; }
-          if (o.isAmmo) { if (mode === "scarcity") grantAmmo(o.value); obstacles.splice(oi, 1); continue; }
+          if (o.isLife) { grantLife(o.value); obstacles.splice(oi,1); continue; }
+          if (o.isAmmo) { if (mode === "scarcity") grantAmmo(o.value); obstacles.splice(oi,1); continue; }
 
-          if (invuln <= 0) {
-            obstacles.splice(oi, 1);
-            spendLife();
-          }
+          obstacles.splice(oi,1);
+          spendLife();
           break;
         }
 
@@ -1160,21 +1152,13 @@
       function step(t) {
         requestAnimationFrame(step);
         if (!running) { render(); lastT = t; return; }
+
         const dt = Math.min(0.033, (t - lastT) / 1000 || 0);
         lastT = t;
+
         if (paused || crashed) { render(); return; }
         update(dt);
         render();
-      }
-
-      function start() {
-        if (!mode || !level) return;
-        running = true;
-        paused = false;
-        crashed = false;
-        setOverlay(false);
-        lastT = performance.now();
-        setUI();
       }
 
       function togglePause() {
@@ -1186,10 +1170,17 @@
       function startOrRestart() {
         if (!mode || !level) return;
         resetGame();
-        start();
+        running = true;
+        paused = false;
+        crashed = false;
+        setOverlay(false);
+        lastT = performance.now();
+        setUI();
       }
 
-      // Input
+      // -----------------------------
+      // Inputs
+      // -----------------------------
       function onKeyDown(e) {
         if (e.repeat) return;
         const k = e.key.toLowerCase();
@@ -1215,7 +1206,28 @@
         btn.addEventListener("pointerleave",  () => setter(false));
       }
 
+      bindTouchHold(leftBtn,  (v) => { moveLeftHeld = v; if (v) moveRightHeld = false; });
+      bindTouchHold(rightBtn, (v) => { moveRightHeld = v; if (v) moveLeftHeld = false; });
+      bindTouchHold(shootBtn, (v) => { shootHeld = v; if (v) shootOnce(); });
+
+      pauseBtn.addEventListener("click", () => { ensureAudio(); togglePause(); });
+      restartBtn.addEventListener("click", () => { ensureAudio(); startOrRestart(); });
+      startBtn.addEventListener("click", () => { ensureAudio(); startOrRestart(); });
+
+      soundBtn.addEventListener("click", () => { ensureAudio(); soundOn = !soundOn; setUI(); });
+
+      document.getElementById("stage").addEventListener("pointerdown", () => {
+        if (!mode || !level) return;
+        ensureAudio();
+        if (!running) startOrRestart();
+      });
+
+      window.addEventListener("keydown", onKeyDown, { passive: false });
+      window.addEventListener("keyup", onKeyUp);
+
+      // -----------------------------
       // Overlay selection
+      // -----------------------------
       function showModePicker() {
         mode = null; level = null;
         running = false; paused = false; crashed = false;
@@ -1225,8 +1237,7 @@
         startRow.style.display = "none";
 
         setOverlay(true, "Choose Mode", "Pick a mode to start.");
-        hintSub.textContent = "On phone: use the fixed bottom Left/Right/Shoot buttons.";
-
+        hintSub.textContent = "On phone: use the fixed bottom Left/Shoot/Right buttons.";
         setUI();
         computeStageHeight();
       }
@@ -1239,11 +1250,11 @@
         levelRow.style.display = "flex";
         startRow.style.display = "none";
 
-        if (mode === "infinite") {
-          setOverlay(true, "Choose Level", "Infinite Shoot: unlimited bullets. Select Level 1/2/3.");
-        } else {
-          setOverlay(true, "Choose Level", "Scarcity: start with 0 bullets. Collect AMMO. Select Level 1/2/3.");
-        }
+        setOverlay(true, "Choose Level",
+          (mode === "infinite")
+            ? "Infinite Shoot: unlimited bullets. Select Level 1/2/3."
+            : "Scarcity: start with 0 bullets. Collect AMMO. Select Level 1/2/3."
+        );
 
         setUI();
         computeStageHeight();
@@ -1255,21 +1266,16 @@
         levelRow.style.display = "none";
         startRow.style.display = "flex";
 
-        let lvTxt = "";
-        if (level === 1) lvTxt = "Level 1 (Easy): shooting LIFE box has no effect.";
-        if (level === 2) lvTxt = "Level 2 (Normal): shooting LIFE box destroys it, no life change.";
-        if (level === 3) lvTxt = "Level 3 (Advanced): shooting LIFE box reduces life by its number.";
+        const lvTxt =
+          (level === 1) ? "Level 1 (Easy): shooting LIFE box has no effect."
+          : (level === 2) ? "Level 2 (Normal): shooting LIFE box destroys it, no life change."
+          : "Level 3 (Advanced): shooting LIFE box reduces life by its number.";
 
-        setOverlay(true, "Ready!", `${lvTxt} Tap Start (or tap the game area).`);
+        setOverlay(true, "Ready!", `${lvTxt} Tap Start (or tap the game).`);
 
         resetGame();
         computeStageHeight();
       }
-
-      // UI bindings
-      pauseBtn.addEventListener("click", () => { ensureAudio(); togglePause(); });
-      restartBtn.addEventListener("click", () => { ensureAudio(); startOrRestart(); });
-      startBtn.addEventListener("click", () => { ensureAudio(); startOrRestart(); });
 
       modeInfiniteBtn.addEventListener("click", () => { ensureAudio(); chooseMode("infinite"); });
       modeScarcityBtn.addEventListener("click", () => { ensureAudio(); chooseMode("scarcity"); });
@@ -1289,28 +1295,16 @@
           (level === 1) ? "Level 1: shooting LIFE box has no effect."
           : (level === 2) ? "Level 2: shooting LIFE box destroys it, no life change."
           : "Level 3: shooting LIFE box reduces life by its number.";
-        alert("Driver Seat POV:\n• Windshield + dashboard overlays.\n• Steering wheel turns a bit when changing lane.\n\n" + modeTxt + "\n\nCommon:\n• 3 lanes.\n• Only destroying obstacle boxes gives points.\n• LIFE boxes (green): hitting adds life.\n" + lvlTxt);
+        alert(
+          "Cockpit POV:\n• Player is a fixed cockpit.\n• You move lanes (left/right).\n• Obstacles come toward you.\n\n" +
+          modeTxt + "\n\nCommon:\n• Only destroying obstacle boxes gives points.\n• LIFE boxes (green): hit to gain life.\n" +
+          lvlTxt
+        );
       });
-
-      soundBtn.addEventListener("click", () => { ensureAudio(); soundOn = !soundOn; setUI(); });
-
-      bindTouchHold(leftBtn,  (v) => { moveLeftHeld = v; if (v) moveRightHeld = false; });
-      bindTouchHold(rightBtn, (v) => { moveRightHeld = v; if (v) moveLeftHeld = false; });
-      bindTouchHold(shootBtn, (v) => { shootHeld = v; if (v) shootOnce(); });
-
-      document.getElementById("stage").addEventListener("pointerdown", () => {
-        if (!mode || !level) return;
-        ensureAudio();
-        if (!running) startOrRestart();
-      });
-
-      window.addEventListener("keydown", onKeyDown, { passive: false });
-      window.addEventListener("keyup", onKeyUp);
 
       // Init
       updateSoundBtn();
       initDashes();
-      resetCar();
       computeStageHeight();
       showModePicker();
       requestAnimationFrame(step);
